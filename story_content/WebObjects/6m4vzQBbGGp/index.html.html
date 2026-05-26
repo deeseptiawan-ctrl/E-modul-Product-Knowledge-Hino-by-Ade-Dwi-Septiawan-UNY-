@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulator Gradeability - Penjelasan Konsep</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 15px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            border: 3px solid #d00000;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #000;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .description {
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 12px;
+            border-left: 5px solid #d00000;
+            text-align: center;
+        }
+        .visual-box {
+            border: 1px solid #ccc;
+            background: #fafafa;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        /* Kotak Penjelasan Konsep */
+        .explanation-box {
+            margin-top: 15px;
+            padding: 18px 25px;
+            border-radius: 8px;
+            background-color: #f1f8e9; /* Hijau sangat muda */
+            border: 2px solid #8bc34a;
+            font-size: 16px;
+            line-height: 1.6;
+            width: 85%;
+            color: #2e7d32;
+        }
+        .status-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            width: 85%;
+            transition: all 0.3s;
+        }
+        .sliders-section {
+            background: #fff5f5;
+            padding: 25px;
+            border-radius: 6px;
+            border: 2px solid #d00000;
+        }
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .slider-group label {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #d00000;
+        }
+        .slider-group input {
+            width: 80%;
+            cursor: pointer;
+            height: 8px;
+        }
+        .slider-value {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+            font-size: 28px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Memahami Arti Persentase Daya Tanjak</h2>
+    <div class="description">
+        Geser angka persentase di bawah ini untuk melihat ilustrasi kemiringan jalan. Perhatikan kotak penjelasan hijau untuk memahami maksud dari angka tersebut!
+    </div>
+    
+    <div class="visual-box">
+        <svg id="visualSvg" width="500" height="220">
+            <polygon id="triangle" points="40,190 360,190 360,190" fill="rgba(208, 0, 0, 0.15)" stroke="#d00000" stroke-width="2"/>
+            <line x1="40" y1="190" x2="360" y2="190" stroke="#333" stroke-width="2"/>
+            <line x1="360" y1="190" x2="360" y2="190" id="riseLine" stroke="#333" stroke-dasharray="4" stroke-width="1.5"/>
+            
+            <text x="200" y="210" text-anchor="middle" font-size="14" font-weight="bold">Jarak Mendatar: 100 Meter</text>
+            <text x="375" y="190" id="riseText" font-size="14" font-weight="bold" fill="#d00000">Naik: 0 m</text>
+            
+            <g id="truckGroup" transform="translate(40,190)">
+                <rect x="-22" y="-16" width="32" height="16" fill="#d00000" rx="2"/>
+                <rect x="10" y="-11" width="10" height="11" fill="#222" rx="1"/>
+                <rect x="12" y="-9" width="6" height="5" fill="#e0f7fa"/>
+                <rect x="-20" y="-26" width="28" height="10" fill="#999" rx="1"/>
+                <circle cx="-10" cy="2" r="4.5" fill="#111" stroke="#fff" stroke-width="1"/>
+                <circle cx="6" cy="2" r="4.5" fill="#111" stroke="#fff" stroke-width="1"/>
+            </g>
+        </svg>
+        
+        <div class="explanation-box">
+            <div style="font-weight:bold; font-size: 18px; margin-bottom: 8px; color: #1b5e20;">📚 Penjelasan Konsep:</div>
+            <span id="explanationText">Arti dari Daya Tanjak <b>0%</b> adalah:<br>Truk mampu mendaki jalan setinggi <b>0 meter</b> secara vertikal, untuk setiap pergerakan lurus sejauh <b>100 meter</b> jarak mendatar, dalam kondisi bak terisi muatan penuh (GVM maksimal).</span>
+        </div>
+
+        <div id="statusBox" class="status-box">
+            Rekomendasi Rute: Jalan Tol & Dalam Kota
+        </div>
+    </div>
+    
+    <div class="sliders-section">
+        <div class="slider-group">
+            <label for="gradeSlider">Geser Angka Daya Tanjak Sesuai Brosur (%)</label>
+            <input type="range" id="gradeSlider" min="10" max="60" value="30" oninput="updateVisual()">
+            <div class="slider-value" id="gradeValue">30%</div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateVisual() {
+    var persen = parseFloat(document.getElementById('gradeSlider').value);
+    
+    // Update teks angka besar
+    document.getElementById('gradeValue').innerText = persen + "%";
+    
+    // Update Teks Penjelasan Konsep
+    document.getElementById('explanationText').innerHTML = "Arti dari Daya Tanjak <b>" + persen + "%</b> adalah:<br>Truk mampu mendaki jalan setinggi <b>" + persen + " meter</b> secara vertikal, untuk setiap pergerakan lurus sejauh <b>100 meter</b> jarak mendatar, dalam kondisi bak terisi muatan penuh (GVM maksimal).";
+    
+    // Logika visual tinggi garis (Lebar dasar segitiga sekarang 320 pixel)
+    var risePixels = (persen / 100) * 320; 
+    if(risePixels > 160) risePixels = 160; 
+    
+    var topY = 190 - risePixels;
+    
+    // Update Segitiga
+    document.getElementById('triangle').setAttribute('points', `40,190 360,190 360,${topY}`);
+    document.getElementById('riseLine').setAttribute('y1', '190');
+    document.getElementById('riseLine').setAttribute('y2', topY.toString());
+    
+    // Pindahkan teks Naik
+    var riseText = document.getElementById('riseText');
+    riseText.setAttribute('y', (190 - (risePixels / 2)).toString());
+    riseText.textContent = "Naik: " + persen + " m";
+    
+    // Putar Truk
+    var visualAngleRad = Math.atan(risePixels / 320); 
+    var visualAngleDeg = visualAngleRad * (180 / Math.PI);
+    var midX = 200;
+    var midY = 190 - (risePixels / 2);
+    document.getElementById('truckGroup').setAttribute('transform', `translate(${midX}, ${midY}) rotate(${-visualAngleDeg})`);
+    
+    // LOGIKA REKOMENDASI MEDAN KERJA
+    var statusBox = document.getElementById('statusBox');
+    if (persen < 25) {
+        statusBox.innerHTML = "💡 Rekomendasi Rute: Jalan Mendatar (Tol, Aspal Dalam Kota, Kargo Ringan)";
+        statusBox.style.backgroundColor = "#e8f5e9"; 
+        statusBox.style.borderColor = "#4caf50";
+        statusBox.style.color = "#2e7d32";
+    } else if (persen >= 25 && persen <= 35) {
+        statusBox.innerHTML = "💡 Rekomendasi Rute: Tanjakan Menengah (Lintas Provinsi, Perbukitan Aspal)";
+        statusBox.style.backgroundColor = "#fff3e0"; 
+        statusBox.style.borderColor = "#ff9800";
+        statusBox.style.color = "#ef6c00";
+    } else {
+        statusBox.innerHTML = "💡 Rekomendasi Rute: Ekstrem (Area Tambang, Galian Pasir, Tanjakan Tanah Curam)";
+        statusBox.style.backgroundColor = "#ffebee"; 
+        statusBox.style.borderColor = "#f44336";
+        statusBox.style.color = "#c62828";
+    }
+}
+
+// Jalankan saat pertama kali dibuka
+updateVisual();
+</script>
+
+</body>
+</html>

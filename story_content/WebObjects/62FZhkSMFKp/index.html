@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktif GVW Truk Kargo - Hino</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            height: calc(100vh - 20px);
+            overflow: hidden;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #111111;
+            margin: 0 0 5px 0;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .sub-title {
+            text-align: center;
+            font-size: 15px;
+            color: #666666;
+            margin: 0 0 20px 0;
+            flex-shrink: 0;
+        }
+
+        .grid-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* AREA GAMBAR SVG */
+        .illustration-box {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        svg {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            max-height: 100%;
+        }
+
+        /* BAGIAN INTERAKTIF GAMBAR */
+        .clickable-part {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clickable-part:hover {
+            opacity: 0.8;
+            filter: brightness(0.9);
+        }
+
+        /* WARNA DEFAULT KOMPONEN */
+        .part-a { fill: #d5d5d5; stroke: #888; stroke-width: 2; }
+        .part-b { fill: #bbbbbb; }
+        .part-c { fill: #eeeeee; stroke: #999; stroke-width: 2; }
+        .part-d { fill: #cccccc; stroke: #777; stroke-width: 1.5; }
+
+        /* WARNA AKTIF */
+        .active .part-a { fill: #ef9a9a; stroke: #e53935; }
+        .active .part-b { fill: #1e88e5; }
+        .active .part-c { fill: #ffe082; stroke: #ffb300; }
+        .active .part-d { fill: #b2dfdb; stroke: #00897b; }
+
+        .glass {
+            fill: #e3f2fd;
+            stroke: #999;
+            stroke-width: 1.5;
+        }
+
+        .active .glass {
+            fill: #e3f2fd;
+            stroke: #e53935;
+        }
+
+        /* CARD */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: #fdfdfd;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .card.active-a { border-color: #e53935; background-color: #ffebee; }
+        .card.active-b { border-color: #1e88e5; background-color: #e3f2fd; }
+        .card.active-c { border-color: #ffb300; background-color: #fff8e1; }
+        .card.active-d { border-color: #00897b; background-color: #e0f2f1; }
+
+        .card-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555555;
+            margin-bottom: 5px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #111111;
+        }
+
+        /* RESULT */
+        .result-panel {
+            border: 2px solid #222222;
+            border-radius: 6px;
+            padding: 18px;
+            background: #ffffff;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .formula-line {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333333;
+            margin-bottom: 12px;
+        }
+
+        .formula-line span {
+            padding: 2px 10px;
+            border-radius: 4px;
+            background: #eeeeee;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .formula-line span.active-val-a {
+            background: #e53935;
+            color: white;
+        }
+
+        .formula-line span.active-val-b {
+            background: #1e88e5;
+            color: white;
+        }
+
+        .formula-line span.active-val-c {
+            background: #ffb300;
+            color: black;
+        }
+
+        .formula-line span.active-val-d {
+            background: #00897b;
+            color: white;
+        }
+
+        .total-line {
+            font-size: 16px;
+            color: #444444;
+            margin-bottom: 10px;
+        }
+
+        .total-line strong {
+            font-size: 20px;
+            color: #111111;
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            color: #444444;
+        }
+
+        .status-badge.safe {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge.overload {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="main-title">
+        MEMAHAMI TOTAL WEIGHT DAN GVW (GROSS VEHICLE WEIGHT)
+    </div>
+
+    <div class="sub-title">
+        Klik bagian gambar atau kartu di bawah untuk simulasi GVW aktual truk di jalan
+    </div>
+
+    <div class="grid-layout">
+
+        <div class="illustration-box">
+
+            <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
+
+                <line x1="40" y1="240" x2="760" y2="240"
+                    stroke="#cccccc" stroke-width="2" />
+
+                <!-- KAROSERI -->
+                <g id="svgPartC" class="clickable-part" onclick="toggleComponent('C')">
+
+                    <rect x="250" y="65" width="12" height="115" class="part-c" />
+
+                    <line x1="250" y1="85" x2="262" y2="85"
+                        stroke="#999" stroke-width="1.5" />
+
+                    <line x1="250" y1="105" x2="262" y2="105"
+                        stroke="#999" stroke-width="1.5" />
+
+                    <rect x="250" y="180" width="450" height="15" class="part-c" />
+
+                    <rect x="262" y="145" width="438" height="35"
+                        class="part-c" rx="2" />
+
+                    <line x1="408" y1="145" x2="408" y2="180"
+                        stroke="#999" stroke-width="2" />
+
+                    <line x1="554" y1="145" x2="554" y2="180"
+                        stroke="#999" stroke-width="2" />
+
+                    <rect x="330" y="195" width="120" height="12" class="part-c" />
+
+                </g>
+
+                <!-- MUATAN -->
+                <g id="svgPartD" class="clickable-part" onclick="toggleComponent('D')">
+
+                    <rect x="275" y="85" width="60" height="60" class="part-d" />
+                    <line x1="275" y1="115" x2="335" y2="115"
+                        stroke="#888" stroke-width="1"/>
+
+                    <rect x="345" y="85" width="60" height="60" class="part-d" />
+                    <line x1="345" y1="115" x2="405" y2="115"
+                        stroke="#888" stroke-width="1"/>
+
+                    <rect x="310" y="25" width="60" height="60" class="part-d" />
+                    <line x1="310" y1="55" x2="370" y2="55"
+                        stroke="#888" stroke-width="1"/>
+
+                    <rect x="425" y="75" width="70" height="70" class="part-d" />
+
+                    <rect x="505" y="55" width="90" height="90" class="part-d" />
+
+                    <line x1="550" y1="55" x2="550" y2="145"
+                        stroke="#888" stroke-width="1"/>
+
+                    <rect x="605" y="85" width="60" height="60" class="part-d" />
+
+                </g>
+
+                <!-- SASIS -->
+                <g id="svgPartA" class="clickable-part" onclick="toggleComponent('A')">
+
+                    <rect x="100" y="195" width="600" height="15"
+                        class="part-a" rx="2" />
+
+                    <rect x="680" y="200" width="20" height="5" class="part-a" />
+
+                    <path d="M 90 190 L 90 110 C 90 80, 110 60, 140 60 L 230 60 C 240 60, 245 65, 245 75 L 245 190 Z"
+                        class="part-a" />
+
+                    <rect x="95" y="150" width="15" height="25" fill="#aaa" />
+
+                    <rect x="85" y="180" width="25" height="20"
+                        class="part-a" rx="3"/>
+
+                    <path d="M 105 130 L 105 105 C 105 85, 120 75, 140 75 L 210 75 L 210 130 Z"
+                        class="glass" />
+
+                </g>
+
+                <!-- SOPIR -->
+                <g id="svgPartB" class="clickable-part" onclick="toggleComponent('B')">
+
+                    <circle cx="160" cy="95" r="9" class="part-b" />
+
+                    <path d="M 145 130 C 145 115, 175 115, 175 130 Z"
+                        class="part-b" />
+
+                </g>
+
+                <!-- RODA -->
+                <g class="wheels">
+
+                    <circle cx="165" cy="215" r="22"
+                        fill="#333" stroke="#fff" stroke-width="2"/>
+
+                    <circle cx="165" cy="215" r="10" fill="#bbb"/>
+
+                    <circle cx="530" cy="215" r="22"
+                        fill="#333" stroke="#fff" stroke-width="2"/>
+
+                    <circle cx="530" cy="215" r="10" fill="#bbb"/>
+
+                    <circle cx="585" cy="215" r="22"
+                        fill="#333" stroke="#fff" stroke-width="2"/>
+
+                    <circle cx="585" cy="215" r="10" fill="#bbb"/>
+
+                </g>
+
+            </svg>
+
+        </div>
+
+        <div class="cards-container">
+
+            <div class="card" id="cardA" onclick="toggleComponent('A')">
+                <div class="card-label">A. BERAT SASIS & KABIN</div>
+                <div class="card-title">Chassis & Cab</div>
+            </div>
+
+            <div class="card" id="cardB" onclick="toggleComponent('B')">
+                <div class="card-label">B. SOPIR & KRU</div>
+                <div class="card-title">Driver</div>
+            </div>
+
+            <div class="card" id="cardC" onclick="toggleComponent('C')">
+                <div class="card-label">C. BERAT KAROSERI</div>
+                <div class="card-title">Bodywork Empty</div>
+            </div>
+
+            <div class="card" id="cardD" onclick="toggleComponent('D')">
+                <div class="card-label">D. BERAT MUATAN</div>
+                <div class="card-title">Payload Cargo</div>
+            </div>
+
+        </div>
+
+        <div class="result-panel">
+
+            <div class="formula-line">
+                TOTAL WEIGHT =
+                <span id="formulaA">0</span> +
+                <span id="formulaB">0</span> +
+                <span id="formulaC">0</span> +
+                <span id="formulaD">0</span>
+            </div>
+
+            <div class="total-line">
+                Total Berat Aktual Kendaraan Saat Ini di Jalan:
+                <strong id="totalWeightDisplay">0 kg</strong>
+            </div>
+
+            <div class="status-badge" id="gvwStatus">
+                BATAS MAKSIMAL GVW: 16.000 kg
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const weightValues = {
+    A: 4500,
+    B: 150,
+    C: 2500,
+    D: 8000
+};
+
+let activeStates = {
+    A: false,
+    B: false,
+    C: false,
+    D: false
+};
+
+function toggleComponent(part) {
+
+    activeStates[part] = !activeStates[part];
+
+    const svgGroup = document.getElementById('svgPart' + part);
+    const cardElement = document.getElementById('card' + part);
+    const formulaSpan = document.getElementById('formula' + part);
+
+    if (activeStates[part]) {
+
+        svgGroup.classList.add('active');
+
+        cardElement.classList.add(
+            'active-' + part.toLowerCase()
+        );
+
+        formulaSpan.innerText =
+            weightValues[part].toLocaleString('id-ID');
+
+        formulaSpan.classList.add(
+            'active-val-' + part.toLowerCase()
+        );
+
+    } else {
+
+        svgGroup.classList.remove('active');
+
+        cardElement.classList.remove(
+            'active-' + part.toLowerCase()
+        );
+
+        formulaSpan.innerText = "0";
+
+        formulaSpan.classList.remove(
+            'active-val-' + part.toLowerCase()
+        );
+    }
+
+    calculateGVW();
+}
+
+function calculateGVW() {
+
+    let total = 0;
+
+    if (activeStates.A) total += weightValues.A;
+    if (activeStates.B) total += weightValues.B;
+    if (activeStates.C) total += weightValues.C;
+    if (activeStates.D) total += weightValues.D;
+
+    document.getElementById('totalWeightDisplay')
+        .innerText = total.toLocaleString('id-ID') + " kg";
+
+    const statusBadge =
+        document.getElementById('gvwStatus');
+
+    const maxGVW = 16000;
+
+    if (total === 0) {
+
+        statusBadge.className = "status-badge";
+
+        statusBadge.innerText =
+            "BATAS MAKSIMAL GVW: " +
+            maxGVW.toLocaleString('id-ID') + " kg";
+
+    }
+
+    else if (total <= maxGVW) {
+
+        statusBadge.className =
+            "status-badge safe";
+
+        statusBadge.innerText =
+            "✓ AMAN (Di bawah batas GVW " +
+            maxGVW.toLocaleString('id-ID') + " kg)";
+
+    }
+
+    else {
+
+        statusBadge.className =
+            "status-badge overload";
+
+        statusBadge.innerText =
+            "⚠️ OVERLOAD (Melebihi batas GVW " +
+            maxGVW.toLocaleString('id-ID') + " kg!)";
+    }
+}
+
+</script>
+
+</body>
+</html>
