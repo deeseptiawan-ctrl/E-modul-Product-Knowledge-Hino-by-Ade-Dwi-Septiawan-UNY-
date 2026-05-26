@@ -144,7 +144,7 @@ document.body.addEventListener("touchstart", goFull);
 document.body.addEventListener("click", goFull);
 </script>
 
-  <script>
+<script>
 function keluarModul() {
 
   // keluar fullscreen
@@ -152,15 +152,18 @@ function keluarModul() {
     document.exitFullscreen();
   }
 
-  // cek HP atau Laptop
+  // HP
   if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 
-    // HP → pindah halaman kosong
-    window.location.replace("about:blank");
+    // pindah halaman kosong
+    setTimeout(function () {
+      document.body.innerHTML = "";
+      document.body.style.background = "black";
+    }, 300);
 
   } else {
 
-    // Laptop → coba tutup tab
+    // Laptop
     setTimeout(function () {
       window.open('', '_self');
       window.close();
